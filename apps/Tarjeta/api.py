@@ -56,3 +56,21 @@ def tarjeta_detail_api_view(request, pk=None):
 
     # Si no se encuentra el tarjeta 
     return Response({'message':'No se encontró la tarjeta indicada'}, status=status.HTTP_400_BAD_REQUEST)   # Manejo de errores
+
+@api_view(['GET'])
+@parser_classes([MultiPartParser, JSONParser])
+def tarjeta_usuario_api_view(request, pk=None):
+    tarjetas = Tarjeta.objects.filter(propietario=pk)
+    tjts_srlzr = TarjetaSerializer(tarjetas, many=True)
+    return Response(tjts_srlzr.data, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+@parser_classes([MultiPartParser, JSONParser])
+def tarjeta_numero_api_view(request, num=None):
+    tarjeta = Tarjeta.objects.filter(numero=num).first()
+    
+    if tarjeta:
+        tjts_srlzr = TarjetaSerializerListar(tarjeta)
+        return Response(tjts_srlzr.data, status=status.HTTP_200_OK)
+    
+    return Response({'message':'No se encontró la tarjeta indicada'}, status=status.HTTP_400_BAD_REQUEST)
