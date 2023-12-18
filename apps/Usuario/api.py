@@ -56,3 +56,19 @@ def usuario_detail_api_view(request, pk=None):
 
     # Si no se encuentra el usuario
     return Response({'message':'No se encontró el usuario indicado'}, status=status.HTTP_400_BAD_REQUEST)   # Manejo de errores
+
+@api_view(['POST'])
+@parser_classes([MultiPartParser, JSONParser])
+def login_api_view(request):
+    rfc = request.data['rfc']
+    usr = Usuario.objects.filter(rfc=rfc).first()
+    if usr:
+        usr_srlzr = UsuarioSerializer(usr)
+        return Response({
+            'usuario':usr_srlzr.data,
+            'message':'Usuario encontrado'
+        }, status=status.HTTP_200_OK)
+
+    return Response({
+        'message':'Usuario no encontrado'}  
+    ,status=status.HTTP_400_BAD_REQUEST)

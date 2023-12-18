@@ -16,7 +16,7 @@ class Tarjeta(models.Model):
     saldo = models.DecimalField(max_digits=10, decimal_places=2, null=False, blank=False)
     # Relación de clave foránea con el modelo Usuario
     # Si se elimina un usuario, sus tarjetas asociadas también se eliminarán
-    propietario = models.ForeignKey(Usuario, on_delete=models.CASCADE, null=False, blank=False)
+    propietario = models.ForeignKey( Usuario, on_delete=models.CASCADE, null=False, blank=False)
 
     # Método para representar el objeto Tarjeta como un string
     def __str__(self):

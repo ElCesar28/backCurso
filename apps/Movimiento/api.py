@@ -23,3 +23,28 @@ def movimiento_api_view(request):
             mov_serializado.save()  # Guardar la nueva tarjeta
             return Response({'message': 'Movimiento creado correctamente!'}, status=status.HTTP_201_CREATED) # Respuesta de éxito
         return Response(mov_serializado.errors, status=status.HTTP_400_BAD_REQUEST)  # Manejo de errores
+
+@api_view(['POST'])
+@parser_classes([MultiPartParser, JSONParser])
+def transferir_api_view(request):
+    origen = request.data['origen']
+    destino = request.data['destino']
+    cantidad = int(request.data['cantidad'])
+
+    tarjeta_origen = Tarjeta.objects.filter(idTarjeta=origen).first()
+    tarjeta_destino = Tarjeta.objects.filter(idTarjeta=destino).first()
+
+    if tarjeta_origen and tarjeta_destino:
+        if tarjeta_origen.saldo >= cantidad:
+            tarjeta_origen.saldo -= cantidad
+            tarjeta_destino.saldo += cantidad
+            tarjeta_origen.save()
+            tarjeta_destino.save()
+            mov = Movimiento(
+                tipo='Transferencia', 
+                monto=cantidad, 
+                tarjetaOrigen=tarjeta_origen, 
+                tarjetaDestino=tarjeta_destino
+            )
+            mov.save()
+            return Response({'message': 'Transferencia realizada correctamente!'}, status=status.HTTP_201_CREATED)
